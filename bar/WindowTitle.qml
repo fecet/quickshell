@@ -11,6 +11,6 @@ CW.StyledText {
 
   text: ToplevelManager.activeToplevel?.activated ? ToplevelManager.activeToplevel.title : `Workspace ${monitor?.activeWorkspace?.id}`
 
-  horizontalAlignment: Text.AlignHCenter
+  horizontalAlignment: Text.AlignLeft // align title text to the left
   elide: Text.ElideRight
 }
