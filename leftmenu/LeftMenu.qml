@@ -18,8 +18,8 @@ WrapperItem {
     SettingsSlice {
       Layout.fillWidth: true
     }
-    SystemTray {
-      Layout.fillWidth: true
-    }
+    // SystemTray {
+    //   Layout.fillWidth: true
+    // }
   }
 }

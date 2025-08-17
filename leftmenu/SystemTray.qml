@@ -8,11 +8,15 @@ import "../config" as C
 
 WrapperRectangle {
   id: root
+  // flatten style when embedded in bar
+  property bool embedded: false
+  // external visibility gate
+  property bool show: true
   resizeChild: false
-  color: C.Config.applySecondaryOpacity(C.Config.theme.surface_container)
-  margin: 5
-  radius: 5
-  opacity: SystemTray.items.values.length > 0 ? 1 : 0
+  color: embedded ? "transparent" : C.Config.applySecondaryOpacity(C.Config.theme.surface_container)
+  margin: embedded ? 0 : 5
+  radius: embedded ? 0 : 5
+  opacity: (SystemTray.items.values.length > 0 && root.show) ? 1 : 0
   visible: opacity > 0
   Behavior on opacity {
     NumberAnimation {

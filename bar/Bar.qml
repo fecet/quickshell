@@ -1,4 +1,6 @@
 import "../config" as C
+import "../leftmenu" as LM
+import "../state" as S
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
@@ -160,6 +162,19 @@ PanelWindow {
     }
 
     Clock {
+      Layout.topMargin: root.topContentMargin
+      Layout.bottomMargin: root.bottomContentMargin
+    }
+
+    BarSeparator {
+      Layout.topMargin: root.topContentMargin
+      Layout.bottomMargin: root.bottomContentMargin
+    }
+
+    // System tray embedded directly in the bar (visibility gated by S.TrayState)
+    LM.SystemTray {
+      embedded: true
+      show: S.TrayState.visible
       Layout.topMargin: root.topContentMargin
       Layout.bottomMargin: root.bottomContentMargin
     }
