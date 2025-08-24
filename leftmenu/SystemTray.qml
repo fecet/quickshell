@@ -16,7 +16,7 @@ WrapperRectangle {
   color: embedded ? "transparent" : C.Config.applySecondaryOpacity(C.Config.theme.surface_container)
   margin: embedded ? 0 : 5
   radius: embedded ? 0 : 5
-  opacity: (SystemTray.items.values.length > 0 && root.show) ? 1 : 0
+  opacity: (SystemTray.items && SystemTray.items.values.length > 0 && root.show) ? 1 : 0
   visible: opacity > 0
   Behavior on opacity {
     NumberAnimation {
@@ -25,9 +25,17 @@ WrapperRectangle {
     }
   }
 
+  // Add error handling for SystemTray initialization
+  Component.onCompleted: {
+    if (!SystemTray) {
+      console.warn("SystemTray not available");
+      root.visible = false;
+    }
+  }
+
   RowLayout {
     Repeater {
-      model: SystemTray.items
+      model: SystemTray.items || null
 
       WrapperMouseArea {
         id: delegate
@@ -39,9 +47,16 @@ WrapperRectangle {
 
           IconImage {
             id: trayIcon
-            source: delegate.modelData.icon
+            source: delegate.modelData ? delegate.modelData.icon : ""
             implicitSize: 16
             visible: !C.Config.settings.tray.monochromeIcons
+
+            // Add error handling for icon loading
+            onStatusChanged: {
+              if (status === Image.Error) {
+                console.debug("SystemTray: Failed to load icon for", delegate.modelData ? delegate.modelData.id : "unknown item");
+              }
+            }
           }
 
           Loader {
@@ -67,14 +82,26 @@ WrapperRectangle {
         acceptedButtons: Qt.RightButton | Qt.LeftButton
 
         onClicked: event => {
-          switch (event.button) {
-          case Qt.LeftButton:
-            modelData.activate();
-            break;
-          case Qt.RightButton:
-            if (modelData.hasMenu)
-              menu.open();
-            break;
+          if (!delegate.modelData) {
+            event.accepted = true;
+            return;
+          }
+
+          try {
+            switch (event.button) {
+            case Qt.LeftButton:
+              if (delegate.modelData.activate) {
+                delegate.modelData.activate();
+              }
+              break;
+            case Qt.RightButton:
+              if (delegate.modelData.hasMenu && menu) {
+                menu.open();
+              }
+              break;
+            }
+          } catch (error) {
+            console.warn("SystemTray click error:", error);
           }
           event.accepted = true;
         }
